@@ -82,13 +82,23 @@ func main() {
 	var level logging.Level
 
 	var configFilePath string
+	var keysDirPath string
 	var logLevel string
 	var shouldAutogenKeys bool
 
 	flag.BoolVar(&shouldAutogenKeys, "autogenkeys", false, "auto-generate cryptographic keys specified in configuration file")
 	flag.StringVar(&configFilePath, "config", "", "configuration file")
+	flag.StringVar(&keysDirPath, "keysdir", "", "the path to the keys directory")
 	flag.StringVar(&logLevel, "log_level", "INFO", "logging level could be set to: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL")
 	flag.Parse()
+
+	level, err = stringToLogLevel(logLevel)
+	if err != nil {
+		log.Critical("Invalid logging-level specified.")
+		os.Exit(1)
+	}
+	logBackend := setupLoggerBackend(level)
+	log.SetBackend(logBackend)
 
 	passphrase := os.Getenv("MIX_CLIENT_VAULT_PASSPHRASE")
 	if len(passphrase) == 0 {
@@ -101,22 +111,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	level, err = stringToLogLevel(logLevel)
-	if err != nil {
-		log.Critical("Invalid logging-level specified.")
+	if keysDirPath == "" {
+		log.Error("you must specify a keys directory file path")
+		flag.Usage()
 		os.Exit(1)
 	}
-	logBackend := setupLoggerBackend(level)
-	log.SetBackend(logBackend)
 
 	sigKillChan := make(chan os.Signal, 1)
 	signal.Notify(sigKillChan, os.Interrupt, os.Kill)
 
 	if shouldAutogenKeys == true {
-		util.GenerateKeys(configFilePath)
+		err := util.GenerateKeys(configFilePath, keysDirPath, passphrase)
+		if err != nil {
+			panic(err)
+		}
+		os.Exit(0)
 	}
 
-	client, err := util.NewClientDaemon(configFilePath, passphrase)
+	client, err := util.NewClientDaemon(configFilePath, passphrase, keysDirPath)
 	if err != nil {
 		panic(err)
 	}
