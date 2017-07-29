@@ -79,7 +79,6 @@ func setupLoggerBackend(level logging.Level) logging.LeveledBackend {
 
 func main() {
 	var err error
-	var config *util.Config
 	var level logging.Level
 
 	var configFilePath string
@@ -102,11 +101,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	tomlConfig, err := util.LoadConfig(configFilePath)
-	if err != nil {
-		panic(err)
-	}
-
 	level, err = stringToLogLevel(logLevel)
 	if err != nil {
 		log.Critical("Invalid logging-level specified.")
@@ -119,16 +113,14 @@ func main() {
 	signal.Notify(sigKillChan, os.Interrupt, os.Kill)
 
 	if shouldAutogenKeys == true {
-		// XXX todo: autogen keys
+		util.GenerateKeys(configFilePath)
 	}
 
-	config, err = tomlConfig.Config(passphrase)
+	client, err := util.NewClientDaemon(configFilePath, passphrase)
 	if err != nil {
 		panic(err)
 	}
-
 	log.Notice("mixclient startup")
-	client := util.NewClientDaemon(config)
 	client.Start()
 
 	defer client.Stop()
