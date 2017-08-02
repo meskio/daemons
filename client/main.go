@@ -121,7 +121,11 @@ func main() {
 	signal.Notify(sigKillChan, os.Interrupt, os.Kill)
 
 	if shouldAutogenKeys == true {
-		err := util.GenerateKeys(configFilePath, keysDirPath, passphrase)
+		config, err := util.FromFile(configFilePath)
+		if err != nil {
+			panic(err)
+		}
+		err = config.GenerateKeys(keysDirPath, passphrase)
 		if err != nil {
 			panic(err)
 		}
