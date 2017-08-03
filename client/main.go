@@ -132,12 +132,19 @@ func main() {
 		os.Exit(0)
 	}
 
-	client, err := util.NewClientDaemon(configFilePath, passphrase, keysDirPath)
+	config, err := util.FromFile(configFilePath)
+	if err != nil {
+		panic(err)
+	}
+	client, err := util.NewClientDaemon(config, passphrase, keysDirPath)
 	if err != nil {
 		panic(err)
 	}
 	log.Notice("mixclient startup")
-	client.Start()
+	err = client.Start()
+	if err != nil {
+		panic(err)
+	}
 
 	defer client.Stop()
 	for {
