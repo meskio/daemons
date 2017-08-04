@@ -26,6 +26,7 @@ import (
 	"unsafe"
 
 	"github.com/katzenpost/client/util"
+	"github.com/katzenpost/core/pki"
 	"github.com/op/go-logging"
 )
 
@@ -83,12 +84,16 @@ func main() {
 
 	var configFilePath string
 	var keysDirPath string
+	var jsonUserFile string
+	var consensusFile string
 	var logLevel string
 	var shouldAutogenKeys bool
 
 	flag.BoolVar(&shouldAutogenKeys, "autogenkeys", false, "auto-generate cryptographic keys specified in configuration file")
 	flag.StringVar(&configFilePath, "config", "", "configuration file")
 	flag.StringVar(&keysDirPath, "keysdir", "", "the path to the keys directory")
+	flag.StringVar(&jsonUserFile, "jsonuserfile", "", "user pki in a json file")
+	flag.StringVar(&consensusFile, "consensusFile", "", "consensus file path to use as the mixnet PKI")
 	flag.StringVar(&logLevel, "log_level", "INFO", "logging level could be set to: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL")
 	flag.Parse()
 
@@ -117,6 +122,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	if jsonUserFile == "" {
+		log.Error("you must specify a user-pki json file path")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	if consensusFile == "" {
+		log.Error("you must specify a mixnet PKI consensus file path")
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	sigKillChan := make(chan os.Signal, 1)
 	signal.Notify(sigKillChan, os.Interrupt, os.Kill)
 
@@ -136,7 +153,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	client, err := util.NewClientDaemon(config, passphrase, keysDirPath)
+
+	userPKI, err := util.UserPKIFromJsonFile(jsonUserFile)
+	if err != nil {
+		panic(err)
+	}
+
+	mixPKI, err := pki.ConsensusFromFile(consensusFile)
+	if err != nil {
+		panic(err)
+	}
+
+	client, err := util.NewClientDaemon(config, passphrase, keysDirPath, userPKI, mixPKI)
 	if err != nil {
 		panic(err)
 	}
