@@ -159,7 +159,7 @@ func main() {
 		panic(err)
 	}
 
-	mixPKI, err := pki.ConsensusFromFile(consensusFile)
+	mixPKI, err := pki.StaticConsensusFromFile(consensusFile)
 	if err != nil {
 		panic(err)
 	}
