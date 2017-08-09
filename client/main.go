@@ -84,16 +84,16 @@ func main() {
 
 	var configFilePath string
 	var keysDirPath string
-	var jsonUserFile string
-	var consensusFile string
+	var userPKIFile string
+	var mixPKIFile string
 	var logLevel string
 	var shouldAutogenKeys bool
 
 	flag.BoolVar(&shouldAutogenKeys, "autogenkeys", false, "auto-generate cryptographic keys specified in configuration file")
 	flag.StringVar(&configFilePath, "config", "", "configuration file")
 	flag.StringVar(&keysDirPath, "keysdir", "", "the path to the keys directory")
-	flag.StringVar(&jsonUserFile, "jsonuserfile", "", "user pki in a json file")
-	flag.StringVar(&consensusFile, "consensusFile", "", "consensus file path to use as the mixnet PKI")
+	flag.StringVar(&userPKIFile, "userpkifile", "", "user pki in a json file")
+	flag.StringVar(&mixPKIFile, "mixpkifile", "", "consensus file path to use as the mixnet PKI")
 	flag.StringVar(&logLevel, "log_level", "INFO", "logging level could be set to: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL")
 	flag.Parse()
 
@@ -122,13 +122,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if jsonUserFile == "" {
+	if userPKIFile == "" {
 		log.Error("you must specify a user-pki json file path")
 		flag.Usage()
 		os.Exit(1)
 	}
 
-	if consensusFile == "" {
+	if mixPKIFile == "" {
 		log.Error("you must specify a mixnet PKI consensus file path")
 		flag.Usage()
 		os.Exit(1)
@@ -154,12 +154,12 @@ func main() {
 		panic(err)
 	}
 
-	userPKI, err := util.UserPKIFromJsonFile(jsonUserFile)
+	userPKI, err := util.UserPKIFromJsonFile(userPKIFile)
 	if err != nil {
 		panic(err)
 	}
 
-	mixPKI, err := pki.StaticConsensusFromFile(consensusFile)
+	mixPKI, err := pki.StaticPKIFromFile(mixPKIFile)
 	if err != nil {
 		panic(err)
 	}
