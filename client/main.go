@@ -164,7 +164,12 @@ func main() {
 		panic(err)
 	}
 
-	client, err := util.NewClientDaemon(config, passphrase, keysDirPath, userPKI, mixPKI)
+	providerSessionPool, err := util.PoolFromAccounts(config, keysDirPath, passphrase, mixPKI)
+	if err != nil {
+		panic(err)
+	}
+
+	client, err := util.NewClientDaemon(config, providerSessionPool, userPKI, mixPKI)
 	if err != nil {
 		panic(err)
 	}
