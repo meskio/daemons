@@ -25,8 +25,16 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/katzenpost/client/util"
-	"github.com/katzenpost/core/pki"
+	"github.com/katzenpost/client"
+	"github.com/katzenpost/client/config"
+	"github.com/katzenpost/client/constants"
+	"github.com/katzenpost/client/mix_pki"
+	"github.com/katzenpost/client/path_selection"
+	"github.com/katzenpost/client/proxy"
+	"github.com/katzenpost/client/session_pool"
+	"github.com/katzenpost/client/user_pki"
+	"github.com/katzenpost/core/crypto/rand"
+	"github.com/katzenpost/core/wire/server"
 	"github.com/op/go-logging"
 )
 
@@ -137,49 +145,68 @@ func main() {
 	sigKillChan := make(chan os.Signal, 1)
 	signal.Notify(sigKillChan, os.Interrupt, os.Kill)
 
+	cfg, err := config.FromFile(configFilePath)
+	if err != nil {
+		panic(err)
+	}
 	if shouldAutogenKeys == true {
-		config, err := util.FromFile(configFilePath)
-		if err != nil {
-			panic(err)
-		}
-		err = config.GenerateKeys(keysDirPath, passphrase)
+		err = cfg.GenerateKeys(keysDirPath, passphrase)
 		if err != nil {
 			panic(err)
 		}
 		os.Exit(0)
 	}
 
-	config, err := util.FromFile(configFilePath)
+	accountKeys, err := cfg.Accounts(keysDirPath, passphrase)
 	if err != nil {
 		panic(err)
 	}
 
-	userPKI, err := util.UserPKIFromJsonFile(userPKIFile)
+	userPKI, err := user_pki.UserPKIFromJsonFile(userPKIFile)
 	if err != nil {
 		panic(err)
 	}
 
-	mixPKI, err := pki.StaticPKIFromFile(mixPKIFile)
+	mixPKI, err := mix_pki.StaticPKIFromFile(mixPKIFile)
 	if err != nil {
 		panic(err)
 	}
 
-	providerSessionPool, err := util.PoolFromAccounts(config, keysDirPath, passphrase, mixPKI)
+	providerSessionPool, err := session_pool.PoolFromAccounts(cfg, keysDirPath, passphrase, mixPKI)
 	if err != nil {
 		panic(err)
 	}
 
-	client, err := util.NewClientDaemon(config, providerSessionPool, userPKI, mixPKI)
+	nrHops := 3
+	poissonLambda := float64(.234)
+	routeFactory := path_selection.New(mixPKI, nrHops, poissonLambda)
+	smtpProxy := proxy.NewSubmitProxy(routeFactory, accountKeys, rand.Reader, userPKI, providerSessionPool)
+	pop3Proxy := proxy.NewPop3Proxy()
+
+	var smtpServer, pop3Server *server.Server
+	if len(cfg.SMTPProxy.Network) == 0 {
+		smtpServer = server.New(constants.DefaultSMTPNetwork, constants.DefaultSMTPAddress, smtpProxy.HandleSMTPSubmission, nil)
+	} else {
+		smtpServer = server.New(cfg.SMTPProxy.Network, cfg.SMTPProxy.Address, smtpProxy.HandleSMTPSubmission, nil)
+	}
+
+	if len(cfg.POP3Proxy.Network) == 0 {
+		pop3Server = server.New(constants.DefaultPOP3Network, constants.DefaultPOP3Address, pop3Proxy.HandleConnection, nil)
+	} else {
+		pop3Server = server.New(cfg.POP3Proxy.Network, cfg.POP3Proxy.Address, pop3Proxy.HandleConnection, nil)
+	}
+
+	daemon, err := client.NewClientDaemon(smtpServer, pop3Server)
 	if err != nil {
 		panic(err)
 	}
 	log.Notice("mixclient startup")
-	err = client.Start()
+	err = daemon.Start()
 	if err != nil {
 		panic(err)
 	}
 
-	defer client.Stop()
+	defer daemon.Stop()
 	for {
 		select {
 		case <-sigKillChan:
