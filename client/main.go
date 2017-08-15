@@ -25,7 +25,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/katzenpost/client"
+	"github.com/katzenpost/client/auth"
 	"github.com/katzenpost/client/config"
 	"github.com/katzenpost/client/constants"
 	"github.com/katzenpost/client/mix_pki"
@@ -157,7 +157,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	accountKeys, err := cfg.Accounts(keysDirPath, passphrase)
+	accountKeys, err := cfg.AccountsMap(constants.EndToEndKeyType, keysDirPath, passphrase)
 	if err != nil {
 		panic(err)
 	}
@@ -172,7 +172,12 @@ func main() {
 		panic(err)
 	}
 
-	providerSessionPool, err := session_pool.PoolFromAccounts(cfg, keysDirPath, passphrase, mixPKI)
+	peerAuthenticator, err := auth.New(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	providerSessionPool, err := session_pool.New(accountKeys, cfg, peerAuthenticator, mixPKI)
 	if err != nil {
 		panic(err)
 	}
@@ -196,17 +201,19 @@ func main() {
 		pop3Server = server.New(cfg.POP3Proxy.Network, cfg.POP3Proxy.Address, pop3Proxy.HandleConnection, nil)
 	}
 
-	daemon, err := client.NewClientDaemon(smtpServer, pop3Server)
-	if err != nil {
-		panic(err)
-	}
 	log.Notice("mixclient startup")
-	err = daemon.Start()
+
+	err = smtpServer.Start()
 	if err != nil {
 		panic(err)
 	}
+	defer smtpServer.Stop()
+	err = pop3Server.Start()
+	if err != nil {
+		panic(err)
+	}
+	defer pop3Server.Stop()
 
-	defer daemon.Stop()
 	for {
 		select {
 		case <-sigKillChan:
