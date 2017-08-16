@@ -182,9 +182,7 @@ func main() {
 		panic(err)
 	}
 
-	nrHops := 3
-	poissonLambda := float64(.234)
-	routeFactory := path_selection.New(mixPKI, nrHops, poissonLambda)
+	routeFactory := path_selection.New(mixPKI, constants.HopsPerPath, constants.PoissonLambda)
 	smtpProxy := proxy.NewSubmitProxy(routeFactory, accountKeys, rand.Reader, userPKI, providerSessionPool)
 	pop3Proxy := proxy.NewPop3Proxy()
 
