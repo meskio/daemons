@@ -25,13 +25,14 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/katzenpost/client/auth"
+	//"github.com/katzenpost/client/auth"
 	"github.com/katzenpost/client/config"
 	"github.com/katzenpost/client/constants"
-	"github.com/katzenpost/client/mix_pki"
-	"github.com/katzenpost/client/path_selection"
+	//"github.com/katzenpost/client/mix_pki"
+	"github.com/katzenpost/client/outgoing_queue"
+	//"github.com/katzenpost/client/path_selection"
 	"github.com/katzenpost/client/proxy"
-	"github.com/katzenpost/client/session_pool"
+	//"github.com/katzenpost/client/session_pool"
 	"github.com/katzenpost/client/user_pki"
 	"github.com/katzenpost/core/crypto/rand"
 	"github.com/katzenpost/core/wire/server"
@@ -94,6 +95,7 @@ func main() {
 	var keysDirPath string
 	var userPKIFile string
 	var mixPKIFile string
+	var outgoingDBFile string
 	var logLevel string
 	var shouldAutogenKeys bool
 
@@ -102,6 +104,7 @@ func main() {
 	flag.StringVar(&keysDirPath, "keysdir", "", "the path to the keys directory")
 	flag.StringVar(&userPKIFile, "userpkifile", "", "user pki in a json file")
 	flag.StringVar(&mixPKIFile, "mixpkifile", "", "consensus file path to use as the mixnet PKI")
+	flag.StringVar(&outgoingDBFile, "outgoingdbfile", "", "outgoing messages DB file path")
 	flag.StringVar(&logLevel, "log_level", "INFO", "logging level could be set to: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL")
 	flag.Parse()
 
@@ -167,23 +170,27 @@ func main() {
 		panic(err)
 	}
 
-	mixPKI, err := mix_pki.StaticPKIFromFile(mixPKIFile)
+	// mixPKI, err := mix_pki.StaticPKIFromFile(mixPKIFile)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	//
+	// peerAuthenticator, err := auth.New(cfg)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	//
+	// providerSessionPool, err := session_pool.New(accountKeys, cfg, peerAuthenticator, mixPKI)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// routeFactory := path_selection.New(mixPKI, constants.HopsPerPath, constants.PoissonLambda)
+
+	outgoingStore, err := outgoing_queue.New(outgoingDBFile)
 	if err != nil {
 		panic(err)
 	}
-
-	peerAuthenticator, err := auth.New(cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	providerSessionPool, err := session_pool.New(accountKeys, cfg, peerAuthenticator, mixPKI)
-	if err != nil {
-		panic(err)
-	}
-
-	routeFactory := path_selection.New(mixPKI, constants.HopsPerPath, constants.PoissonLambda)
-	smtpProxy := proxy.NewSubmitProxy(routeFactory, accountKeys, rand.Reader, userPKI, providerSessionPool)
+	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, outgoingStore)
 	pop3Proxy := proxy.NewPop3Proxy()
 
 	var smtpServer, pop3Server *server.Server
