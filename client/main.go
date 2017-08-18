@@ -192,10 +192,14 @@ func main() {
 		panic(err)
 	}
 	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, outgoingStore)
-	pop3Proxy, err := proxy.NewPop3Proxy(incomingDBFile)
-	if err != nil {
-		panic(err)
-	}
+
+	// ensure each account has a boltdb bucket
+	emails := cfg.AccountIdentities()
+	pop3Backend := proxy.NewPop3Backend(incomingDBFile)
+	pop3Backend.CreateAccountBuckets(emails)
+
+	// create pop3 service
+	pop3Service := proxy.NewPop3Service(incomingDBFile)
 
 	var smtpServer, pop3Server *server.Server
 	if len(cfg.SMTPProxy.Network) == 0 {
@@ -205,9 +209,9 @@ func main() {
 	}
 
 	if len(cfg.POP3Proxy.Network) == 0 {
-		pop3Server = server.New(constants.DefaultPOP3Network, constants.DefaultPOP3Address, pop3Proxy.HandleConnection, nil)
+		pop3Server = server.New(constants.DefaultPOP3Network, constants.DefaultPOP3Address, pop3Service.HandleConnection, nil)
 	} else {
-		pop3Server = server.New(cfg.POP3Proxy.Network, cfg.POP3Proxy.Address, pop3Proxy.HandleConnection, nil)
+		pop3Server = server.New(cfg.POP3Proxy.Network, cfg.POP3Proxy.Address, pop3Service.HandleConnection, nil)
 	}
 
 	log.Notice("mixclient startup")
