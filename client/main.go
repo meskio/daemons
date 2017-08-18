@@ -95,7 +95,7 @@ func main() {
 	var keysDirPath string
 	var userPKIFile string
 	var mixPKIFile string
-	var outgoingDBFile string
+	var outgoingDBFile, incomingDBFile string
 	var logLevel string
 	var shouldAutogenKeys bool
 
@@ -105,6 +105,7 @@ func main() {
 	flag.StringVar(&userPKIFile, "userpkifile", "", "user pki in a json file")
 	flag.StringVar(&mixPKIFile, "mixpkifile", "", "consensus file path to use as the mixnet PKI")
 	flag.StringVar(&outgoingDBFile, "outgoingdbfile", "", "outgoing messages DB file path")
+	flag.StringVar(&incomingDBFile, "incomingdbfile", "", "incoming messages DB file path")
 	flag.StringVar(&logLevel, "log_level", "INFO", "logging level could be set to: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL")
 	flag.Parse()
 
@@ -191,7 +192,10 @@ func main() {
 		panic(err)
 	}
 	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, outgoingStore)
-	pop3Proxy := proxy.NewPop3Proxy()
+	pop3Proxy, err := proxy.NewPop3Proxy(incomingDBFile)
+	if err != nil {
+		panic(err)
+	}
 
 	var smtpServer, pop3Server *server.Server
 	if len(cfg.SMTPProxy.Network) == 0 {
