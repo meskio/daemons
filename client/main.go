@@ -209,7 +209,7 @@ func main() {
 	duration := time.Second * 7 // XXX ok?
 	fetchers := make(map[string]*proxy.Fetcher)
 	for _, identity := range identities {
-		fetcher := proxy.NewFetcher(identity, providerSessionPool)
+		fetcher := proxy.NewFetcher(identity, providerSessionPool, ingressStore)
 		fetchers[identity] = fetcher
 	}
 	periodicRetriever := proxy.NewFetchScheduler(fetchers, duration)
