@@ -23,16 +23,18 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 	"unsafe"
 
-	//"github.com/katzenpost/client/auth"
+	"github.com/katzenpost/client/auth"
 	"github.com/katzenpost/client/config"
 	"github.com/katzenpost/client/constants"
-	//"github.com/katzenpost/client/mix_pki"
-	"github.com/katzenpost/client/outgoing_queue"
+	"github.com/katzenpost/client/mix_pki"
+	"github.com/katzenpost/client/storage/egress"
+	"github.com/katzenpost/client/storage/ingress"
 	//"github.com/katzenpost/client/path_selection"
 	"github.com/katzenpost/client/proxy"
-	//"github.com/katzenpost/client/session_pool"
+	"github.com/katzenpost/client/session_pool"
 	"github.com/katzenpost/client/user_pki"
 	"github.com/katzenpost/core/crypto/rand"
 	"github.com/katzenpost/core/wire/server"
@@ -171,35 +173,50 @@ func main() {
 		panic(err)
 	}
 
-	// mixPKI, err := mix_pki.StaticPKIFromFile(mixPKIFile)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	//
-	// peerAuthenticator, err := auth.New(cfg)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	//
-	// providerSessionPool, err := session_pool.New(accountKeys, cfg, peerAuthenticator, mixPKI)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// routeFactory := path_selection.New(mixPKI, constants.HopsPerPath, constants.PoissonLambda)
-
-	outgoingStore, err := outgoing_queue.New(outgoingDBFile)
+	mixPKI, err := mix_pki.StaticPKIFromFile(mixPKIFile)
 	if err != nil {
 		panic(err)
 	}
-	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, outgoingStore)
 
+	peerAuthenticator, err := auth.New(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	providerSessionPool, err := session_pool.New(accountKeys, cfg, peerAuthenticator, mixPKI)
+	if err != nil {
+		panic(err)
+	}
+
+	// XXX
+	// routeFactory := path_selection.New(mixPKI, constants.HopsPerPath, constants.PoissonLambda)
+
+	egressStore, err := egress.New(outgoingDBFile)
+	if err != nil {
+		panic(err)
+	}
+	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, egressStore)
+
+	ingressStore, err := ingress.New(incomingDBFile)
+	if err != nil {
+		panic(err)
+	}
 	// ensure each account has a boltdb bucket
-	emails := cfg.AccountIdentities()
-	pop3Backend := proxy.NewPop3Backend(incomingDBFile)
-	pop3Backend.CreateAccountBuckets(emails)
+	identities := cfg.AccountIdentities()
+	ingressStore.CreateAccountBuckets(identities)
+
+	// periodically check each account for messages
+	duration := time.Second * 7 // XXX ok?
+	fetchers := make(map[string]*proxy.Fetcher)
+	for _, identity := range identities {
+		fetcher := proxy.NewFetcher(identity, providerSessionPool)
+		fetchers[identity] = fetcher
+	}
+	periodicRetriever := proxy.NewFetchScheduler(fetchers, duration)
+	periodicRetriever.Start()
 
 	// create pop3 service
-	pop3Service := proxy.NewPop3Service(incomingDBFile)
+	pop3Service := proxy.NewPop3Service(ingressStore)
 
 	var smtpServer, pop3Server *server.Server
 	if len(cfg.SMTPProxy.Network) == 0 {
