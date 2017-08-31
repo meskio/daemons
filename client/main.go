@@ -29,12 +29,12 @@ import (
 	"github.com/katzenpost/client/auth"
 	"github.com/katzenpost/client/config"
 	"github.com/katzenpost/client/constants"
+	"github.com/katzenpost/client/crypto/block"
 	"github.com/katzenpost/client/mix_pki"
-	"github.com/katzenpost/client/storage/egress"
-	"github.com/katzenpost/client/storage/ingress"
-	//"github.com/katzenpost/client/path_selection"
+	"github.com/katzenpost/client/path_selection"
 	"github.com/katzenpost/client/proxy"
 	"github.com/katzenpost/client/session_pool"
+	"github.com/katzenpost/client/storage"
 	"github.com/katzenpost/client/user_pki"
 	"github.com/katzenpost/core/crypto/rand"
 	"github.com/katzenpost/core/wire/server"
@@ -97,7 +97,7 @@ func main() {
 	var keysDirPath string
 	var userPKIFile string
 	var mixPKIFile string
-	var outgoingDBFile, incomingDBFile string
+	var dbFile string
 	var logLevel string
 	var shouldAutogenKeys bool
 
@@ -106,8 +106,7 @@ func main() {
 	flag.StringVar(&keysDirPath, "keysdir", "", "the path to the keys directory")
 	flag.StringVar(&userPKIFile, "userpkifile", "", "user pki in a json file")
 	flag.StringVar(&mixPKIFile, "mixpkifile", "", "consensus file path to use as the mixnet PKI")
-	flag.StringVar(&outgoingDBFile, "outgoingdbfile", "", "outgoing messages DB file path")
-	flag.StringVar(&incomingDBFile, "incomingdbfile", "", "incoming messages DB file path")
+	flag.StringVar(&dbFile, "dbfile", "", "incoming and outgoing message DB file path")
 	flag.StringVar(&logLevel, "log_level", "INFO", "logging level could be set to: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL")
 	flag.Parse()
 
@@ -167,56 +166,53 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	userPKI, err := user_pki.UserPKIFromJsonFile(userPKIFile)
 	if err != nil {
 		panic(err)
 	}
-
 	mixPKI, err := mix_pki.StaticPKIFromFile(mixPKIFile)
 	if err != nil {
 		panic(err)
 	}
-
 	peerAuthenticator, err := auth.New(cfg)
 	if err != nil {
 		panic(err)
 	}
-
 	providerSessionPool, err := session_pool.New(accountKeys, cfg, peerAuthenticator, mixPKI)
 	if err != nil {
 		panic(err)
 	}
-
-	// XXX
-	// routeFactory := path_selection.New(mixPKI, constants.HopsPerPath, constants.PoissonLambda)
-
-	egressStore, err := egress.New(outgoingDBFile)
-	if err != nil {
-		panic(err)
-	}
-	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, egressStore)
-
-	ingressStore, err := ingress.New(incomingDBFile)
+	routeFactory := path_selection.New(mixPKI, constants.HopsPerPath, constants.PoissonLambda)
+	store, err := storage.New(dbFile)
 	if err != nil {
 		panic(err)
 	}
 	// ensure each account has a boltdb bucket
 	identities := cfg.AccountIdentities()
-	ingressStore.CreateAccountBuckets(identities)
+	store.CreateAccountBuckets(identities)
 
 	// periodically check each account for messages
 	duration := time.Second * 7 // XXX ok?
 	fetchers := make(map[string]*proxy.Fetcher)
+	senders := make(map[string]*proxy.Sender)
 	for _, identity := range identities {
-		fetcher := proxy.NewFetcher(identity, providerSessionPool, ingressStore)
+		fetcher := proxy.NewFetcher(identity, providerSessionPool, store)
 		fetchers[identity] = fetcher
+		privateKey, err := accountKeys.GetIdentityKey(identity)
+		if err != nil {
+			panic(err)
+		}
+		handler := block.NewHandler(privateKey, rand.Reader)
+		sender := proxy.NewSender(identity, providerSessionPool, store, routeFactory, userPKI, handler)
+		senders[identity] = sender
 	}
+	senderScheduler := proxy.NewSendScheduler(senders, store)
+	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, store, providerSessionPool, routeFactory, senderScheduler)
 	periodicRetriever := proxy.NewFetchScheduler(fetchers, duration)
 	periodicRetriever.Start()
 
 	// create pop3 service
-	pop3Service := proxy.NewPop3Service(ingressStore)
+	pop3Service := proxy.NewPop3Service(store)
 
 	var smtpServer, pop3Server *server.Server
 	if len(cfg.SMTPProxy.Network) == 0 {
