@@ -174,10 +174,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	peerAuthenticator, err := auth.New(cfg)
+	pinnedProviders, err := cfg.GetProviderPinnedKeys()
 	if err != nil {
 		panic(err)
 	}
+	peerAuthenticator := auth.ProviderAuthenticator(pinnedProviders)
 	providerSessionPool, err := session_pool.New(accountKeys, cfg, peerAuthenticator, mixPKI)
 	if err != nil {
 		panic(err)
@@ -190,25 +191,32 @@ func main() {
 	// ensure each account has a boltdb bucket
 	identities := cfg.AccountIdentities()
 	store.CreateAccountBuckets(identities)
-
-	// periodically check each account for messages
-	duration := time.Second * 7 // XXX ok?
 	fetchers := make(map[string]*proxy.Fetcher)
 	senders := make(map[string]*proxy.Sender)
 	for _, identity := range identities {
-		fetcher := proxy.NewFetcher(identity, providerSessionPool, store)
-		fetchers[identity] = fetcher
 		privateKey, err := accountKeys.GetIdentityKey(identity)
 		if err != nil {
 			panic(err)
 		}
 		handler := block.NewHandler(privateKey, rand.Reader)
-		sender := proxy.NewSender(identity, providerSessionPool, store, routeFactory, userPKI, handler)
+		sender, err := proxy.NewSender(identity, providerSessionPool, store, routeFactory, userPKI, handler)
+		if err != nil {
+			panic(err)
+		}
 		senders[identity] = sender
 	}
-	senderScheduler := proxy.NewSendScheduler(senders, store)
-	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, store, providerSessionPool, routeFactory, senderScheduler)
-	periodicRetriever := proxy.NewFetchScheduler(fetchers, duration)
+	sendScheduler := proxy.NewSendScheduler(senders)
+	for _, identity := range identities {
+		privateKey, err := accountKeys.GetIdentityKey(identity)
+		if err != nil {
+			panic(err)
+		}
+		handler := block.NewHandler(privateKey, rand.Reader)
+		fetcher := proxy.NewFetcher(identity, providerSessionPool, store, sendScheduler, handler)
+		fetchers[identity] = fetcher
+	}
+	smtpProxy := proxy.NewSmtpProxy(accountKeys, rand.Reader, userPKI, store, providerSessionPool, routeFactory, sendScheduler)
+	periodicRetriever := proxy.NewFetchScheduler(fetchers, time.Second*7)
 	periodicRetriever.Start()
 
 	// create pop3 service
