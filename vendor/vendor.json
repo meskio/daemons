@@ -1,0 +1,325 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "b2NtKZYnDYlPcsYE4lMSMka1Jk0=",
+			"path": "git.schwanenlied.me/yawning/aez.git",
+			"revision": "043b73f8eb3bd241c6ec3ad23466320ce0f94d73",
+			"revisionTime": "2017-05-16T05:46:24Z"
+		},
+		{
+			"checksumSHA1": "w/GDF6m9YYDX1clpr5CxXAkYRHk=",
+			"path": "git.schwanenlied.me/yawning/bsaes.git",
+			"revision": "a60e5457d7c516774a6574022afbd77deb694083",
+			"revisionTime": "2017-07-06T04:36:07Z"
+		},
+		{
+			"checksumSHA1": "mc1sgwgQbI9AE1RdzaTGXj25BUA=",
+			"path": "git.schwanenlied.me/yawning/bsaes.git/ct32",
+			"revision": "a60e5457d7c516774a6574022afbd77deb694083",
+			"revisionTime": "2017-07-06T04:36:07Z"
+		},
+		{
+			"checksumSHA1": "0L1IDoB4PFRxYRYYmIHApf6vxHw=",
+			"path": "git.schwanenlied.me/yawning/bsaes.git/ct64",
+			"revision": "a60e5457d7c516774a6574022afbd77deb694083",
+			"revisionTime": "2017-07-06T04:36:07Z"
+		},
+		{
+			"checksumSHA1": "sMv86My32uBM+t44eLzLf7hfP5A=",
+			"path": "git.schwanenlied.me/yawning/bsaes.git/ghash",
+			"revision": "a60e5457d7c516774a6574022afbd77deb694083",
+			"revisionTime": "2017-07-06T04:36:07Z"
+		},
+		{
+			"checksumSHA1": "dGBJvvnC0TPYajxJbnzSKHlzJPc=",
+			"path": "git.schwanenlied.me/yawning/bsaes.git/internal/modes",
+			"revision": "a60e5457d7c516774a6574022afbd77deb694083",
+			"revisionTime": "2017-07-06T04:36:07Z"
+		},
+		{
+			"checksumSHA1": "ucLF4yBd9XUstWFHgei+4GrzxFE=",
+			"path": "git.schwanenlied.me/yawning/chacha20.git",
+			"revision": "6f059cfcee2a80421c6489666c5fe1cb08c0cdf1",
+			"revisionTime": "2017-07-28T10:04:43Z"
+		},
+		{
+			"checksumSHA1": "9Cr3oTQFyspv/yJIZq/evnfYNdw=",
+			"path": "git.schwanenlied.me/yawning/newhope.git",
+			"revision": "9598792ba8f205d72c9b5b639b0d2827cbb7d8b9",
+			"revisionTime": "2017-06-22T15:45:29Z"
+		},
+		{
+			"checksumSHA1": "RBRU0KutO3VdOUkC5W/JNOcQfHA=",
+			"path": "github.com/coreos/bbolt",
+			"revision": "700b8ead147093f33e738a9b6487d1ad9938b1cb",
+			"revisionTime": "2017-09-22T00:10:35Z"
+		},
+		{
+			"checksumSHA1": "CC94GmZeHQiUwXoSEuhibEkX9H4=",
+			"path": "github.com/dchest/blake2b",
+			"revision": "06006a921c7d13e3fdf63c401cb0e4529a26e6e4",
+			"revisionTime": "2017-03-07T14:12:22Z"
+		},
+		{
+			"checksumSHA1": "OpOFwpX0erztppV1H2Cg5lx5PMk=",
+			"path": "github.com/katzenpost/client/auth",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "xfk8ym/TZDP9sy+pRcs3EIFR6fE=",
+			"path": "github.com/katzenpost/client/config",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "KV0gEcJDB+HleBixKCoVRLv0YSY=",
+			"path": "github.com/katzenpost/client/constants",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "0T0lDMzRjhtHJdKYVvaAomBrBkM=",
+			"path": "github.com/katzenpost/client/crypto/block",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "Xakd1EWx4drVhPmCcl446awe68A=",
+			"path": "github.com/katzenpost/client/crypto/vault",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "afYIeLh4noeUAuLmtGzIumZd9WQ=",
+			"path": "github.com/katzenpost/client/mix_pki",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "nfCOMhvBIuGs5tDDKfwsyPwAAiU=",
+			"path": "github.com/katzenpost/client/path_selection",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "zCzWCjuS/T3RC+pKLe6CRU0qmBw=",
+			"path": "github.com/katzenpost/client/pop3",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "n4wI+SY4MKbhJhSsezHEg0K5Mbw=",
+			"path": "github.com/katzenpost/client/proxy",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "fMw9Y4aa1Cb8Y+wDIMH1XuiI/IU=",
+			"path": "github.com/katzenpost/client/scheduler",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "CAOJVkkbWsEQI/wJSMwm0H2u1Xk=",
+			"path": "github.com/katzenpost/client/session_pool",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "yweH8OUO+ytokY/XEGAA9RgJWf8=",
+			"path": "github.com/katzenpost/client/storage",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "VXUmxkFuGX540sq74VLe1cYB8yw=",
+			"path": "github.com/katzenpost/client/user_pki",
+			"revision": "e3a1e2dad3402de64dcf6889b3c1bb3737586eca",
+			"revisionTime": "2017-09-22T08:32:51Z"
+		},
+		{
+			"checksumSHA1": "QRWrDL0rxhB2tojT/rmhIDzl7h8=",
+			"path": "github.com/katzenpost/core/constants",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "kYKA5WYO8wdkO+FRjp075sqJOKo=",
+			"path": "github.com/katzenpost/core/crypto/ecdh",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "SoQrSaIzd9cinIsPxqf2fIt0pIk=",
+			"path": "github.com/katzenpost/core/crypto/rand",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "j6ycWcb8yNoj4K1fZY+yGpwOPk4=",
+			"path": "github.com/katzenpost/core/epochtime",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "8U+UvYALWIp2F7V5xxnVG/vvTyk=",
+			"path": "github.com/katzenpost/core/monotime",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "3qFO9q9Dduf0rsBsbUmP5oy3Ze0=",
+			"path": "github.com/katzenpost/core/pki",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "ugVLB78aWvrf0iK8GBZva7NYPNE=",
+			"path": "github.com/katzenpost/core/queue",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "UWS5ZEOSZhWgHy0pFyTzUfOJrkA=",
+			"path": "github.com/katzenpost/core/sphinx",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "t3R+gJuHBZTqD46yR45kuGXzj4k=",
+			"path": "github.com/katzenpost/core/sphinx/commands",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "g9w5iwcgDGeOjKAZDhDyIIDCHss=",
+			"path": "github.com/katzenpost/core/sphinx/constants",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "q7URWGYFCm6/BIhevw43e7dwdwE=",
+			"path": "github.com/katzenpost/core/sphinx/internal/crypto",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "pGTHfMXWfZOpB6bFL3nm144lbZ0=",
+			"path": "github.com/katzenpost/core/utils",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "0PU5jovKeCY92V+TzbaBGS85f6M=",
+			"path": "github.com/katzenpost/core/wire",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "YoGrKtl0G4gxQlgVkZSh7CYORdI=",
+			"path": "github.com/katzenpost/core/wire/commands",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "IRuS6+EkpYTPuxAVkt5TS+YNrE8=",
+			"path": "github.com/katzenpost/core/wire/server",
+			"revision": "186079a6c4cd7b275fcfcd2b0f3ee83d8dbd7e40",
+			"revisionTime": "2017-09-06T23:31:54Z"
+		},
+		{
+			"checksumSHA1": "afV2aNFqYGGeo9qggCbMrDKqWro=",
+			"path": "github.com/katzenpost/noise",
+			"revision": "ca5757558b5b675706e55a7d744ca52dfe42498b",
+			"revisionTime": "2017-07-29T08:46:49Z"
+		},
+		{
+			"checksumSHA1": "vEbM5lwOEbscsyNOblVMKjwGHOw=",
+			"path": "github.com/magical/argon2",
+			"revision": "190e3cf208e185668db6aa048e4985b7b7b4d890",
+			"revisionTime": "2016-03-03T23:56:54Z"
+		},
+		{
+			"checksumSHA1": "mJQtsTCZGhCmjdFtXBWryZSri/o=",
+			"path": "github.com/minio/blake2b-simd",
+			"revision": "3f5f724cb5b182a5c278d6d3d55b40e7f8c2efb4",
+			"revisionTime": "2016-07-23T06:10:19Z"
+		},
+		{
+			"checksumSHA1": "BoXdUBWB8UnSlFlbnuTQaPqfCGk=",
+			"path": "github.com/op/go-logging",
+			"revision": "970db520ece77730c7e4724c61121037378659d9",
+			"revisionTime": "2016-03-15T20:05:05Z"
+		},
+		{
+			"checksumSHA1": "zZg0J0MqvnqXVYo644QDvnUinrc=",
+			"path": "github.com/pelletier/go-toml",
+			"revision": "69d355db5304c0f7f809a2edc054553e7142f016",
+			"revisionTime": "2017-06-28T01:26:37Z"
+		},
+		{
+			"checksumSHA1": "xqaBPdhoQX1R1HLhcEKF6GZErKU=",
+			"path": "github.com/siebenmann/smtpd",
+			"revision": "e0fc53b0ac440fd167960c1d5bfe9095387b9893",
+			"revisionTime": "2016-07-20T19:53:57Z"
+		},
+		{
+			"checksumSHA1": "FZQEdq4axGzxfrzfMy2DeYtE8ok=",
+			"path": "golang.org/x/crypto/blake2b",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "4+dTeSP3U8cTvZtiTLBxZ6aByMk=",
+			"path": "golang.org/x/crypto/blake2s",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "m9yg5wdKmx3W9acf73DonWNK/RE=",
+			"path": "golang.org/x/crypto/chacha20poly1305",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "8f1lWFSOLu7O6Jqk/e+ydH1yoms=",
+			"path": "golang.org/x/crypto/chacha20poly1305/internal/chacha20",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "dwOedwBJ1EIK9+S3t108Bx054Y8=",
+			"path": "golang.org/x/crypto/curve25519",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "Y/FcWB2/xSfX1rRp7HYhktHNw8s=",
+			"path": "golang.org/x/crypto/nacl/secretbox",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "x7EiaCEsuaZ3jc8r+8KBmYwESmA=",
+			"path": "golang.org/x/crypto/poly1305",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "w8PESKJweP+BCAxCYPU1QC08qUU=",
+			"path": "golang.org/x/crypto/salsa20/salsa",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		},
+		{
+			"checksumSHA1": "DDHnuGCrmkKSXdNzc8pmn6P5O28=",
+			"path": "golang.org/x/crypto/sha3",
+			"revision": "f6b343c37ca80bfa8ea539da67a0b621f84fab1d",
+			"revisionTime": "2016-12-21T04:54:10Z"
+		}
+	],
+	"rootPath": "github.com/katzenpost/daemons"
+}
